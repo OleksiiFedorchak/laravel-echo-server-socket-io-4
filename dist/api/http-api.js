@@ -42,19 +42,31 @@ var HttpApi = (function () {
         });
     };
     HttpApi.prototype.getChannels = function (req, res) {
-        var prefix = url.parse(req.url, true).query.filter_by_prefix;
         var rooms = this.io.sockets.adapter.rooms;
         var channels = {};
-        Object.keys(rooms).forEach(function (channelName) {
-            if (rooms[channelName].sockets[channelName]) {
+        var prefixes = [
+            'private-events.organization',
+            'private-event',
+            'logout.user'
+        ];
+        Array.from(rooms).map(function (channelData) {
+            var channelName = channelData[0];
+            var clients = rooms.get(channelName);
+            if (!clients) {
                 return;
             }
-            if (prefix && !channelName.startsWith(prefix)) {
+            var prefixFound = false;
+            prefixes.map(function (x) {
+                if (channelName.indexOf(x) > -1 && prefixFound === false) {
+                    prefixFound = true;
+                }
+            });
+            if (!prefixFound) {
                 return;
             }
             channels[channelName] = {
-                subscription_count: rooms[channelName].length,
-                occupied: true
+                subscription_count: clients.size,
+                occupied: true,
             };
         });
         res.json({ channels: channels });

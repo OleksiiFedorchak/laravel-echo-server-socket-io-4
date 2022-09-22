@@ -90,24 +90,56 @@ export class HttpApi {
      * @param {any} res
      */
     getChannels(req: any, res: any): void {
-        let prefix = url.parse(req.url, true).query.filter_by_prefix;
+        // let prefix = url.parse(req.url, true).query.filter_by_prefix;
         let rooms = this.io.sockets.adapter.rooms;
         let channels = {};
 
-        Object.keys(rooms).forEach(function(channelName) {
-            if (rooms[channelName].sockets[channelName]) {
+        let prefixes = [
+            'private-events.organization',
+            'private-event',
+            'logout.user'
+        ]
+
+        Array.from(rooms).map((channelData) => {
+            let channelName = channelData[0];
+            let clients = rooms.get(channelName);
+
+            if (!clients) {
                 return;
             }
 
-            if (prefix && !channelName.startsWith(prefix)) {
+            let prefixFound = false;
+
+            prefixes.map(x => {
+                if (channelName.indexOf(x) > -1 && prefixFound === false) {
+                    prefixFound = true;
+                }
+            })
+
+            if (!prefixFound) {
                 return;
             }
 
             channels[channelName] = {
-                subscription_count: rooms[channelName].length,
-                occupied: true
-            };
+                subscription_count: clients.size,
+                occupied: true,
+            }
         });
+
+        // Object.keys(rooms).forEach(function(channelName) {
+        //     if (rooms[channelName].sockets[channelName]) {
+        //         return;
+        //     }
+        //
+        //     if (prefix && !channelName.startsWith(prefix)) {
+        //         return;
+        //     }
+        //
+        //     channels[channelName] = {
+        //         subscription_count: rooms[channelName].length,
+        //         occupied: true
+        //     };
+        // });
 
         res.json({ channels: channels });
     }
