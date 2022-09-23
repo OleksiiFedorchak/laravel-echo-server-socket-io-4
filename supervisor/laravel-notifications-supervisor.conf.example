@@ -2,7 +2,7 @@
 process_name=%(program_name)s_%(process_num)02d
 
 # "/var/www/echo-server" - path to server.js file which runs laravel-echo-server.
-command=node /var/www/echo-server/server.js
+command=node /var/www/sw-live-notifications/server.js
 autostart=true
 autorestart=true
 user=root
