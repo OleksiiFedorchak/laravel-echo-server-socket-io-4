@@ -6,7 +6,7 @@ https://github.com/tlaverdure/laravel-echo-server
 # How to set up?
 1. Clone the package.
 ``` shell
-git clone -b master https://git.syncwords.xyz/OleksiiFedorchak/sw-live-notifications.git
+git clone https://git.syncwords.xyz/OleksiiFedorchak/sw-live-notifications.git
 ```
 2. Go into project folder.
 ``` shell
